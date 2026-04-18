@@ -1,4 +1,4 @@
-# Hardening Report: step-security--action-slack-notify/v2.3.5
+# Hardening Report: rtCamp--action-slack-notify/v2.3.3
 
 > This file was generated automatically by the hardening agent.
 
@@ -6,5 +6,5 @@
 
 **Test Policy SHA:** `f2e7d85641cde4267138117189b8eba7ba2bfbde`
 
-Action **step-security--action-slack-notify/v2.3.5** was hardened automatically. 0 finding(s) were identified and resolved across 0 iteration(s).
+Action **rtCamp--action-slack-notify/v2.3.3** was hardened automatically. 0 finding(s) were identified and resolved across 0 iteration(s).
 
