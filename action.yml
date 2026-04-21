@@ -1,34 +1,34 @@
 name: 'Slack Notify'
 description: 'This action will send a notification to Slack'
-author: 'step-security'
+author: 'rtCamp'
 runs:
     using: 'composite'
     steps:
       - name: "Slack-Markdown Message Conversion"
         if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE != ''
         id: slackify_message
-        uses: step-security/slackify-markdown-action@c73f0df37907842e2074609d65096efde9a7e8e2 #v1.1.1
+        uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
         with:
           text: '${{ env.SLACK_MESSAGE }}'
 
       - name: "Slack-Markdown Success Message Conversion"
         if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE_ON_SUCCESS != ''
         id: slackify_success_message
-        uses: step-security/slackify-markdown-action@c73f0df37907842e2074609d65096efde9a7e8e2 #v1.1.1
+        uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
         with:
           text: '${{ env.SLACK_MESSAGE_ON_SUCCESS }}'
 
       - name: "Slack-Markdown Failure Message Conversion"
         if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE_ON_FAILURE != ''
         id: slackify_failure_message
-        uses: step-security/slackify-markdown-action@c73f0df37907842e2074609d65096efde9a7e8e2 #v1.1.1
+        uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
         with:
           text: '${{ env.SLACK_MESSAGE_ON_FAILURE }}'
 
       - name: "Slack-Markdown Cancel Message Conversion"
         if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE_ON_CANCEL != ''
         id: slackify_cancel_message
-        uses: step-security/slackify-markdown-action@c73f0df37907842e2074609d65096efde9a7e8e2 #v1.1.1
+        uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
         with:
           text: '${{ env.SLACK_MESSAGE_ON_CANCEL }}'
 
@@ -41,11 +41,11 @@ runs:
           SLACK_MESSAGE_ON_CANCEL: "${{ steps.slackify_cancel_message.outputs.text || env.SLACK_MESSAGE_ON_CANCEL }}"
           GITHUB_RUN: "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
           ENABLE_ESCAPES: "true"
-        uses: "docker://ghcr.io/step-security/action-slack-notify@sha256:2bd52bb9fad9028cef70b4b1674785f76fcd1b65847e734a5b50bf9c301389bf" #v2.3.3
+        uses: "docker://ghcr.io/rtcamp/action-slack-notify@sha256:acc1c430721b27030d3dacf4273eec569388ad650e127bb9f1292f33cd9cd9bd" # v2.3.3
 
       - name: "Slack Notification (Unformatted)"
         if: env.SLACKIFY_MARKDOWN != 'true'
-        uses: "docker://ghcr.io/step-security/action-slack-notify:v2.3.5@sha256:cb94f33f559b0f2ea2c7197a4cb7aafa74d678dc33b13413f6c4a6efbca7859b" #v2.3.5
+        uses: "docker://ghcr.io/rtcamp/action-slack-notify@sha256:acc1c430721b27030d3dacf4273eec569388ad650e127bb9f1292f33cd9cd9bd" # v2.3.3
         env:
           GITHUB_RUN: "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
 branding:
