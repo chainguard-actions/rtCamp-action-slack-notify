@@ -1,4 +1,4 @@
-# step-security/action-slack-notify
+# rtCamp/action-slack-notify
 
 Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
 
