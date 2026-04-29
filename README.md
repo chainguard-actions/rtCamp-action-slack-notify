@@ -1,6 +1,13 @@
-# step-security/action-slack-notify
+# rtCamp/action-slack-notify
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/rtCamp/action-slack-notify](https://github.com/rtCamp/action-slack-notify).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v2.3.3 | [`v2.3.3`](https://github.com/chainguard-actions/action-slack-notify/tree/v2.3.3) | — |
+| v2.3.5 | [`v2.3.5`](https://github.com/chainguard-actions/action-slack-notify/tree/v2.3.5) | — |
 
 ## Privacy
 
