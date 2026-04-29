@@ -1,5 +1,7 @@
 # rtCamp/action-slack-notify
 
+GitHub Action for sending a notification to a Slack channel
+
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/rtCamp/action-slack-notify](https://github.com/rtCamp/action-slack-notify).
 
 ## Versions
