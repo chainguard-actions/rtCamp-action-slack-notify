@@ -1,4 +1,6 @@
 {
-  "upstream": "rtCamp/action-slack-notify",
-  "version": "v2.3.3"
+  "owner": "rtCamp",
+  "repo": "action-slack-notify",
+  "version": "",
+  "url": "https://github.com/rtCamp/action-slack-notify"
 }
