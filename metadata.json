@@ -1,7 +1,0 @@
-{
-  "owner": "rtCamp",
-  "name": "action-slack-notify",
-  "visibility": "public",
-  "description": "GitHub Action for sending a notification to a Slack channel",
-  "block_publish": false
-}
