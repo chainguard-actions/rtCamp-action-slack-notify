@@ -8,8 +8,8 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
-| v2.3.3 | [`v2.3.3`](https://github.com/chainguard-actions/action-slack-notify/tree/v2.3.3) | — |
-| v2.3.5 | [`v2.3.5`](https://github.com/chainguard-actions/action-slack-notify/tree/v2.3.5) | — |
+| v2.3.3 | [`v2.3.3`](https://github.com/chainguard-actions/rtCamp--action-slack-notify/tree/v2.3.3) | — |
+| v2.3.5 | [`v2.3.5`](https://github.com/chainguard-actions/rtCamp--action-slack-notify/tree/v2.3.5) | — |
 
 ## Privacy
 
