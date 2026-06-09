@@ -10,6 +10,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 |---------|-----|-----------------|
 | v2.3.3 | [`v2.3.3`](https://github.com/chainguard-actions/rtCamp-action-slack-notify/tree/v2.3.3) | — |
 | v2.3.5 | [`v2.3.5`](https://github.com/chainguard-actions/rtCamp-action-slack-notify/tree/v2.3.5) | — |
+| v2.4.0 | [`v2.4.0`](https://github.com/chainguard-actions/rtCamp-action-slack-notify/tree/v2.4.0) | [`33ca3be`](https://github.com/rtCamp/action-slack-notify/commit/33ca3be66c6f378fe1610fd1d5258632dbed5e58) |
 
 ## Privacy
 
