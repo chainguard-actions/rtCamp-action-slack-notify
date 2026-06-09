@@ -1,0 +1,65 @@
+name: 'Slack Notify'
+description: 'This action will send a notification to Slack'
+author: 'rtCamp'
+runs:
+  using: 'composite'
+  steps:
+    - name: Chainguard usage telemetry
+      shell: bash
+      run: |
+        # Best-effort, fails open. Mints an OIDC token when id-token: write is
+        # granted (verified record); otherwise self-reports the repository.
+        tok=""
+        if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ] && [ -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
+          tok=$(curl -sf --max-time 2 \
+            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=actions.chainguard.dev" \
+            | sed -n 's/.*"value":"\([^"]*\)".*/\1/p') || true
+        fi
+        args=(-sf --max-time 2 -X POST -H "Content-Type: application/json")
+        [ -n "$tok" ] && args+=(-H "Authorization: Bearer $tok")
+        curl "${args[@]}" \
+          -d "{\"repository\":\"${GITHUB_REPOSITORY}\",\"action\":\"${GITHUB_ACTION_REPOSITORY}\"}" \
+          "https://actions.enforce.dev/actions/v1/record" >/dev/null 2>&1 || true
+    - name: "Slack-Markdown Message Conversion"
+      if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE != ''
+      id: slackify_message
+      uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
+      with:
+        text: '${{ env.SLACK_MESSAGE }}'
+    - name: "Slack-Markdown Success Message Conversion"
+      if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE_ON_SUCCESS != ''
+      id: slackify_success_message
+      uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
+      with:
+        text: '${{ env.SLACK_MESSAGE_ON_SUCCESS }}'
+    - name: "Slack-Markdown Failure Message Conversion"
+      if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE_ON_FAILURE != ''
+      id: slackify_failure_message
+      uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
+      with:
+        text: '${{ env.SLACK_MESSAGE_ON_FAILURE }}'
+    - name: "Slack-Markdown Cancel Message Conversion"
+      if: env.SLACKIFY_MARKDOWN == 'true' && env.SLACK_MESSAGE_ON_CANCEL != ''
+      id: slackify_cancel_message
+      uses: LoveToKnow/slackify-markdown-action@698a1d4d0ff1794152a93c03ee8ca5e03a310d4e #v1.1.1
+      with:
+        text: '${{ env.SLACK_MESSAGE_ON_CANCEL }}'
+    - name: "Slack Notification (Formatted)"
+      if: env.SLACKIFY_MARKDOWN == 'true'
+      env:
+        SLACK_MESSAGE: "${{ steps.slackify_message.outputs.text || env.SLACK_MESSAGE }}"
+        SLACK_MESSAGE_ON_SUCCESS: "${{ steps.slackify_success_message.outputs.text || env.SLACK_MESSAGE_ON_SUCCESS }}"
+        SLACK_MESSAGE_ON_FAILURE: "${{ steps.slackify_failure_message.outputs.text || env.SLACK_MESSAGE_ON_FAILURE }}"
+        SLACK_MESSAGE_ON_CANCEL: "${{ steps.slackify_cancel_message.outputs.text || env.SLACK_MESSAGE_ON_CANCEL }}"
+        GITHUB_RUN: "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+        ENABLE_ESCAPES: "true"
+      uses: "docker://ghcr.io/rtcamp/action-slack-notify@sha256:17fac87b8ea4ffec1f90b8557f88e8fd69ec8568f690f4ea24d5a408eeee419a" # v2.4.0
+    - name: "Slack Notification (Unformatted)"
+      if: env.SLACKIFY_MARKDOWN != 'true'
+      uses: "docker://ghcr.io/rtcamp/action-slack-notify@sha256:17fac87b8ea4ffec1f90b8557f88e8fd69ec8568f690f4ea24d5a408eeee419a" # v2.4.0
+      env:
+        GITHUB_RUN: "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+branding:
+  icon: 'bell'
+  color: 'yellow'
