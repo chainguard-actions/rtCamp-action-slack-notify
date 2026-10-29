@@ -1,0 +1,53 @@
+name: Test failure color with message override
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Start local webhook receiver
+        run: |
+          rm -f /tmp/slack-payload.json
+          nohup setsid python3 "$GITHUB_WORKSPACE/tests/fixtures/webhook_receiver.py" 18090 /tmp/slack-payload.json > /tmp/receiver.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:18090/ >/dev/null 2>&1; then
+              echo "receiver up"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/receiver.log
+          echo "FAIL: receiver did not start"
+          exit 1
+      - id: action
+        uses: .
+        env:
+          SLACK_WEBHOOK: "http://127.0.0.1:18090/hook"
+          SLACK_MESSAGE: "default message"
+          SLACK_MESSAGE_ON_FAILURE: "the build failed"
+          SLACK_COLOR: "failure"
+          MSG_MINIMAL: "true"
+      - name: Assert failure payload
+        run: |
+          if [ ! -s /tmp/slack-payload.json ]; then
+            cat /tmp/receiver.log || true
+            echo "FAIL: no payload received"
+            exit 1
+          fi
+          cat /tmp/slack-payload.json; echo
+          python3 - <<'EOF'
+          import json, sys
+          p = json.load(open("/tmp/slack-payload.json"))
+          att = (p.get("attachments") or [{}])[0]
+          errs = []
+          if att.get("color") != "danger":
+              errs.append("color=%r (expected danger)" % att.get("color"))
+          fields = att.get("fields", [])
+          if len(fields) != 1 or fields[0].get("value") != "the build failed":
+              errs.append("expected single field with failure message, got %r" % fields)
+          if errs:
+              print("FAIL: " + "; ".join(errs))
+              sys.exit(1)
+          print("PASS")
+          EOF

@@ -1,0 +1,58 @@
+name: Test basic webhook notification
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Start local webhook receiver
+        run: |
+          rm -f /tmp/slack-payload.json
+          nohup setsid python3 "$GITHUB_WORKSPACE/tests/fixtures/webhook_receiver.py" 18089 /tmp/slack-payload.json > /tmp/receiver.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:18089/ >/dev/null 2>&1; then
+              echo "receiver up"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/receiver.log
+          echo "FAIL: receiver did not start"
+          exit 1
+      - id: action
+        uses: .
+        env:
+          SLACK_WEBHOOK: "http://127.0.0.1:18089/hook"
+          SLACK_MESSAGE: "Hello from act test"
+          SLACK_TITLE: "Test Title"
+          SLACK_USERNAME: "act-bot"
+          SLACK_COLOR: "#123456"
+      - name: Assert payload received
+        run: |
+          cat /tmp/receiver.log || true
+          if [ ! -s /tmp/slack-payload.json ]; then
+            echo "FAIL: no payload received"
+            exit 1
+          fi
+          cat /tmp/slack-payload.json; echo
+          python3 - <<'EOF'
+          import json, sys
+          p = json.load(open("/tmp/slack-payload.json"))
+          errs = []
+          if p.get("username") != "act-bot":
+              errs.append("username=%r" % p.get("username"))
+          att = (p.get("attachments") or [{}])[0]
+          if att.get("color") != "#123456":
+              errs.append("color=%r" % att.get("color"))
+          values = [f.get("value") for f in att.get("fields", [])]
+          titles = [f.get("title") for f in att.get("fields", [])]
+          if "Hello from act test" not in values:
+              errs.append("message missing from fields: %r" % values)
+          if "Test Title" not in titles:
+              errs.append("title missing from fields: %r" % titles)
+          if errs:
+              print("FAIL: " + "; ".join(errs))
+              sys.exit(1)
+          print("PASS")
+          EOF
